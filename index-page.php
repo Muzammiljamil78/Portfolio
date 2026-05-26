@@ -208,13 +208,37 @@ while ($res = mysqli_fetch_array($camps)) {
         .offer-card:hover::before { opacity: 1; }
         .offer-card:active { transform: scale(0.97); }
 
-        .offer-img {
-            width: 60px; height: 60px; border-radius: 16px; overflow: hidden;
-            margin-bottom: 12px; box-shadow: 0 8px 20px rgba(108,92,231,0.2);
-            border: 2px solid var(--glass-border); animation: card-img-breathe 4s ease-in-out infinite;
+        /* Animated Logo Ring for Offer Cards */
+        .offer-logo-wrapper {
+            position: relative; width: 80px; height: 80px; margin: 0 auto 12px;
         }
-        @keyframes card-img-breathe { 0%,100%{box-shadow:0 8px 20px rgba(108,92,231,0.2)} 50%{box-shadow:0 12px 30px rgba(108,92,231,0.4)} }
-        .offer-img img { width: 100%; height: 100%; object-fit: cover; }
+        .offer-logo-ring {
+            width: 80px; height: 80px; border-radius: 22px; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .offer-logo-ring::before {
+            content: ''; position: absolute; inset: 0; border-radius: 22px; padding: 2.5px;
+            background: conic-gradient(from 0deg, var(--primary), var(--accent), #fd79a8, var(--primary));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            animation: offer-ring-rotate 3s linear infinite;
+        }
+        @keyframes offer-ring-rotate { to { transform: rotate(360deg); } }
+        .offer-logo-ring::after {
+            content: ''; position: absolute; inset: 6px; border-radius: 18px;
+            background: var(--bg-card); z-index: 0;
+        }
+        .offer-logo-inner {
+            width: 58px; height: 58px; border-radius: 16px; overflow: hidden;
+            position: relative; z-index: 2;
+            box-shadow: 0 8px 25px rgba(108,92,231,0.3);
+            animation: offer-logo-breathe 3s ease-in-out infinite;
+        }
+        @keyframes offer-logo-breathe {
+            0%,100% { transform: scale(1); box-shadow: 0 8px 25px rgba(108,92,231,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 12px 35px rgba(108,92,231,0.5); }
+        }
+        .offer-logo-inner img { width: 100%; height: 100%; object-fit: cover; }
 
         .offer-payout {
             background: linear-gradient(135deg, rgba(0,184,148,0.15), rgba(85,239,196,0.08));
@@ -350,8 +374,12 @@ while ($res = mysqli_fetch_array($camps)) {
 <div class="offer-grid">
     <?php foreach ($campaigns as $camp): ?>
     <div class="offer-card">
-        <div class="offer-img">
-            <img src="<?= htmlspecialchars($camp['img']) ?>" onerror="this.src='https://admincamp.in/logo.jpeg'">
+        <div class="offer-logo-wrapper">
+            <div class="offer-logo-ring">
+                <div class="offer-logo-inner">
+                    <img src="<?= htmlspecialchars($camp['img']) ?>" onerror="this.src='https://admincamp.in/logo.jpeg'">
+                </div>
+            </div>
         </div>
         <div class="offer-payout">&#8377;<?= $camp['amo'] ?></div>
         <h3><?= htmlspecialchars($camp['title']) ?></h3>
